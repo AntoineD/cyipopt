@@ -12,69 +12,13 @@ License: EPL 2.0
 import sys
 import os.path
 from distutils.sysconfig import get_python_lib
-import subprocess as sp
 
 from setuptools import setup
 from setuptools.extension import Extension
 
+import pkgconfig
 import numpy as np
 
-
-exec(open("cyipopt/version.py", encoding="utf-8").read())
-PACKAGE_NAME = "cyipopt"
-DEPRECATED_PACKAGE_NAME = "ipopt"
-VERSION = __version__
-
-
-def pkgconfig(*packages, **kw):
-    """Returns a dictionary containing the include and library flags to pass to
-    a Python extension that depends on the provided packages.
-
-    Parameters
-    ----------
-    *packages : one or more strings
-        These are the names of ``.pc`` files that pkg-config can locate, for
-        example ``ipopt`` for the ``ipopt.pc`` file.
-    **kw : list of strings
-        Any values that should be preset in the returned dictionary. These can
-        include lists of items for: ``include_dirs``, ``library_dirs``,
-        ``libraries``, ``extra_compile_args``.
-
-    Returns
-    -------
-    kw : dictionary
-        Dictionary containing the keys: ``include_dirs``, ``library_dirs``,
-        ``libraries``, ``extra_compile_args`` that are mapped to lists of
-        strings.
-
-    Notes
-    -----
-    This function is based on:
-
-    http://code.activestate.com/recipes/502261-python-distutils-pkg-config/#c2
-
-    """
-    flag_map = {"-I": "include_dirs", "-L": "library_dirs", "-l": "libraries"}
-    output = sp.Popen(["pkg-config", "--libs", "--cflags"] + list(packages),
-                      stdout=sp.PIPE).communicate()[0]
-
-    if not output:  # output will be empty string if pkg-config finds nothing
-        msg = ("pkg-config was not able to find any of the requested packages "
-               "{} on your system. Make sure pkg-config can discover the .pc "
-               "files associated with the installed packages.")
-        raise OSError(msg.format(list(packages)))
-
-    output = output.decode("utf8")
-
-    for token in output.split():
-        if token[:2] in flag_map:
-            kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
-        else:
-            kw.setdefault("extra_compile_args", []).append(token)
-
-    kw["include_dirs"] += [np.get_include()]
-
-    return kw
 
 
 def handle_ext_modules_win_32_conda_forge_ipopt():
@@ -122,7 +66,9 @@ def handle_ext_modules_win_32_other_ipopt():
 def handle_ext_modules_general_os():
     ipopt_wrapper_ext = Extension("ipopt_wrapper",
                                   ["cyipopt/cython/ipopt_wrapper.pyx"],
-                                  **pkgconfig("ipopt"))
+                                  include_dirs=[np.get_include()],
+                                  )
+    pkgconfig.configure_extension(ipopt_wrapper_ext, 'ipopt')
     EXT_MODULES = [ipopt_wrapper_ext]
     DATA_FILES = None
     include_package_data = True
