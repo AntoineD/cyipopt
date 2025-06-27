@@ -31,9 +31,9 @@ dependencies = ["numpy>=1.21.5"]
 Homepage = "https://github.com/mechmotum/cyipopt"
 
 [build-system]
-requires = ["cython>=0.29.28", "numpy>=1.25","setuptools>=44.1.1","pkgconfig"]
-#requires = ["setuptools", "setuptools_scm[toml]"]
-build-backend = "setuptools.build_meta"
+requires = ["meson-python","cython>=0.29.28", "numpy>=1.25"]
+#requires = ["setuptools_scm[toml]"]
+build-backend = "mesonpy"
 
 [tool.setuptools]
 packages = ["cyipopt", "ipopt"]
