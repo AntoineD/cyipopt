@@ -17,21 +17,6 @@ import subprocess as sp
 from setuptools import setup
 from setuptools.extension import Extension
 
-# install requirements before import
-# NOTE : NumPy 1.25 is the first release of NumPy that you can link to the
-# NumPy C-API and it will be guaranteed to be backward compatible back to NumPy
-# 1.19, thus we set the minimum NumPy build version to 1.25. See:
-# https://numpy.org/doc/stable/dev/depending_on_numpy.html#adding-a-dependency-on-numpy
-# for more information.
-from setuptools import dist
-SETUP_REQUIRES = [
-    "cython>=0.29.28",
-    "numpy>=1.25",
-    "setuptools>=44.1.1",
-]
-dist.Distribution().fetch_build_eggs(SETUP_REQUIRES)
-
-from Cython.Distutils import build_ext
 import numpy as np
 
 
@@ -39,34 +24,6 @@ exec(open("cyipopt/version.py", encoding="utf-8").read())
 PACKAGE_NAME = "cyipopt"
 DEPRECATED_PACKAGE_NAME = "ipopt"
 VERSION = __version__
-DESCRIPTION = "A Cython wrapper to the IPOPT optimization package"
-with open("README.rst", encoding="utf-8") as f:
-    LONG_DESCRIPTION = f.read()
-KEYWORDS = [
-    "coin-or",
-    "interior-point",
-    "ipopt",
-    "nlp",
-    "nonlinear programming",
-    "optimization",
-]
-AUTHOR = "Jason K. Moore"
-EMAIL = "moorepants@gmail.com"
-URL = "https://github.com/mechmotum/cyipopt"
-INSTALL_REQUIRES = [
-    "numpy>=1.21.5",
-]
-LICENSE = "EPL-2.0"
-CLASSIFIERS = [
-    "Development Status :: 5 - Production/Stable",
-    "License :: OSI Approved :: Eclipse Public License 2.0 (EPL-2.0)",
-    "Intended Audience :: Science/Research",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
 
 
 def pkgconfig(*packages, **kw):
@@ -202,22 +159,8 @@ if __name__ == "__main__":
     # the `cyipopt` and `ipopt` packages into the `site-packages` directory.
     # Both `import cyipopt` and `import ipopt` will work, with the later giving
     # a deprecation warning.
-    setup(name=PACKAGE_NAME,
-          version=VERSION,
-          author=AUTHOR,
-          author_email=EMAIL,
-          url=URL,
-          description=DESCRIPTION,
-          long_description=LONG_DESCRIPTION,
-          keywords=KEYWORDS,
-          license=LICENSE,
-          classifiers=CLASSIFIERS,
-          packages=[PACKAGE_NAME, DEPRECATED_PACKAGE_NAME],
-          setup_requires=SETUP_REQUIRES,
-          install_requires=INSTALL_REQUIRES,
+    setup(
           include_package_data=include_package_data,
           data_files=DATA_FILES,
-          zip_safe=False,  # required for Py27 on Windows to work
-          cmdclass={"build_ext": build_ext},
           ext_modules=EXT_MODULES,
           )

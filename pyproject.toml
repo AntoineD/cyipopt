@@ -1,3 +1,44 @@
+[project]
+name = "cyipopt"
+authors = [{ name = "Jason K. Moore", email = "moorepants@gmail.com" }]
+description = "A Cython wrapper to the IPOPT optimization package"
+readme = "README.rst"
+license = "EPL-2.0"
+license-files = ["LICENSE"]
+keywords = [
+	"coin-or",
+	"interior-point",
+	"ipopt",
+	"nlp",
+	"nonlinear programming",
+	"optimization",
+]
+classifiers = [
+	"Development Status :: 5 - Production/Stable",
+	"Intended Audience :: Science/Research",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+]
+version = "0.0.0"
+# dynamic = ["version"]
+requires-python = ">=3.9, <3.13"
+dependencies = ["numpy>=1.21.5"]
+
+[project.urls]
+Homepage = "https://github.com/mechmotum/cyipopt"
+
 [build-system]
 requires = ["cython>=0.29.28", "numpy>=1.25","setuptools>=44.1.1"]
+#requires = ["setuptools", "setuptools_scm[toml]"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["cyipopt", "ipopt"]
+
+[tool.setuptools.dynamic]
+version = {attr = "cyipopt.__version__"}
+
+#[tool.setuptools_scm]
