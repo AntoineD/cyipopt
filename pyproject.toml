@@ -22,8 +22,7 @@ classifiers = [
 	"Programming Language :: Python :: 3.11",
 	"Programming Language :: Python :: 3.12",
 ]
-version = "0.0.0"
-# dynamic = ["version"]
+version = "1.4.1"
 requires-python = ">=3.9, <3.13"
 dependencies = ["numpy>=1.21.5"]
 
@@ -32,10 +31,29 @@ Homepage = "https://github.com/mechmotum/cyipopt"
 
 [build-system]
 requires = ["meson-python", "cython>=0.29.28", "numpy>=1.25"]
-#requires = ["setuptools_scm[toml]"]
 build-backend = "mesonpy"
 
-[tool.setuptools.dynamic]
-version = {attr = "cyipopt.__version__"}
-
-#[tool.setuptools_scm]
+[tool.cibuildwheel.linux]
+before-all = [
+	"dnf install -y MUMPS-devel metis-devel lapack-devel",
+	# Build ASL.
+	"git clone https://github.com/coin-or-tools/ThirdParty-ASL.git",
+	"cd ThirdParty-ASL",
+	"./get.ASL",
+	"./configure",
+	"make",
+	"make install",
+	"cd ..",
+	# Build IPOPT.
+	# TODO: get MUMPS found by configure
+	# Look at
+	# https://src.fedoraproject.org/rpms/coin-or-Ipopt/blob/f42/f/coin-or-Ipopt.spec
+	# https://github.com/conda-forge/ipopt-feedstock/blob/main/recipe/meta.yaml
+	"git clone https://github.com/coin-or/Ipopt.git --depth 1 --branch releases/3.14.17",
+	"cd Ipopt",
+	"mkdir build",
+	"cd build",
+	"../configure",
+	"make",
+	"make install",
+]
